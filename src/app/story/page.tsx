@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface VocabEntry {
   definition: string;
@@ -9,11 +9,13 @@ interface VocabEntry {
 }
 
 interface StoryData {
+  id?: string;
   title: string;
   story: string;
   vocabulary: Record<string, VocabEntry>;
   words: string[];
   theme: string;
+  difficulty?: string;
 }
 
 interface TooltipState {
@@ -22,8 +24,11 @@ interface TooltipState {
   y: number;
 }
 
-function parseStory(story: string, vocabulary: Record<string, VocabEntry>, onWordClick: (word: string, x: number, y: number) => void) {
-  // Split on [[word]] markers
+function parseStory(
+  story: string,
+  vocabulary: Record<string, VocabEntry>,
+  onWordClick: (word: string, x: number, y: number) => void
+) {
   const parts = story.split(/(\[\[[\w'-]+\]\])/g);
   return parts.map((part, i) => {
     const match = part.match(/^\[\[([\w'-]+)\]\]$/);
@@ -34,30 +39,56 @@ function parseStory(story: string, vocabulary: Record<string, VocabEntry>, onWor
         <span
           key={i}
           className={isVocab ? 'story-word' : 'font-semibold text-amber-700'}
-          onClick={isVocab ? (e) => {
-            const rect = (e.target as HTMLElement).getBoundingClientRect();
-            onWordClick(word, rect.left + rect.width / 2, rect.bottom + window.scrollY);
-          } : undefined}
+          onClick={
+            isVocab
+              ? (e) => {
+                  const rect = (e.target as HTMLElement).getBoundingClientRect();
+                  onWordClick(word, rect.left + rect.width / 2, rect.bottom + window.scrollY);
+                }
+              : undefined
+          }
         >
           {match[1]}
         </span>
       );
     }
-    // Render paragraphs
     return part.split('\n').map((line, j) =>
-      j === 0 ? <span key={`${i}-${j}`}>{line}</span> : <span key={`${i}-${j}`}><br /><br />{line}</span>
+      j === 0 ? (
+        <span key={`${i}-${j}`}>{line}</span>
+      ) : (
+        <span key={`${i}-${j}`}>
+          <br />
+          <br />
+          {line}
+        </span>
+      )
     );
   });
 }
 
-export default function StoryPage() {
+function StoryContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const historyId = searchParams.get('id');
+
   const [data, setData] = useState<StoryData | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [collectedWords, setCollectedWords] = useState<Set<string>>(new Set());
+  const [loadError, setLoadError] = useState('');
   const tooltipRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (historyId) {
+      fetch(`/api/history/${historyId}`)
+        .then((r) => {
+          if (!r.ok) throw new Error('Not found');
+          return r.json();
+        })
+        .then((d: StoryData) => setData(d))
+        .catch(() => setLoadError('Could not load this story.'));
+      return;
+    }
+
     const raw = sessionStorage.getItem('story-data');
     if (!raw) {
       router.replace('/');
@@ -68,9 +99,8 @@ export default function StoryPage() {
     } catch {
       router.replace('/');
     }
-  }, [router]);
+  }, [historyId, router]);
 
-  // Close tooltip on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target as Node)) {
@@ -82,18 +112,46 @@ export default function StoryPage() {
   }, []);
 
   const handleWordClick = (word: string, x: number, y: number) => {
-    setTooltip(prev => prev?.word === word ? null : { word, x, y });
-    setCollectedWords(prev => new Set([...prev, word]));
+    setTooltip((prev) => (prev?.word === word ? null : { word, x, y }));
+    setCollectedWords((prev) => new Set([...prev, word]));
   };
 
-  if (!data) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
-      <div className="text-center">
-        <div className="text-5xl mb-4 float-animation inline-block">📖</div>
-        <p className="text-xl font-bold text-purple-700">Loading your story...</p>
+  const handleBack = () => {
+    if (historyId) {
+      router.push('/history');
+    } else {
+      router.push('/');
+    }
+  };
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+        <div className="text-center">
+          <div className="text-5xl mb-4">😔</div>
+          <p className="text-xl font-bold text-purple-700 mb-4">{loadError}</p>
+          <button
+            onClick={() => router.push('/history')}
+            className="px-6 py-3 rounded-2xl font-bold text-white"
+            style={{ background: 'linear-gradient(135deg, #7c3aed, #db2777)' }}
+          >
+            ← Back to History
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+        <div className="text-center">
+          <div className="text-5xl mb-4 float-animation inline-block">📖</div>
+          <p className="text-xl font-bold text-purple-700">Loading your story...</p>
+        </div>
+      </div>
+    );
+  }
 
   const vocabList = Object.entries(data.vocabulary);
 
@@ -102,10 +160,10 @@ export default function StoryPage() {
       {/* Header */}
       <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm px-4 py-3 flex items-center justify-between">
         <button
-          onClick={() => router.push('/')}
+          onClick={handleBack}
           className="flex items-center gap-2 text-purple-600 font-bold hover:text-purple-800 transition-colors"
         >
-          ← New Story
+          {historyId ? '← History' : '← New Story'}
         </button>
         <div className="text-sm font-semibold text-purple-500">
           📚 {collectedWords.size}/{vocabList.length} words collected
@@ -118,7 +176,9 @@ export default function StoryPage() {
         <div className="text-center">
           <div className="text-4xl mb-3 sparkle-animation inline-block">✨</div>
           <h1 className="text-3xl font-extrabold" style={{ color: '#4a1080' }}>{data.title}</h1>
-          <p className="text-sm text-purple-400 mt-2">Tap the <span className="story-word text-xs px-1">golden words</span> to learn their meaning!</p>
+          <p className="text-sm text-purple-400 mt-2">
+            Tap the <span className="story-word text-xs px-1">golden words</span> to learn their meaning!
+          </p>
         </div>
 
         {/* Story Text */}
@@ -164,9 +224,7 @@ export default function StoryPage() {
                 <div
                   key={word}
                   className={`rounded-2xl p-4 border-2 transition-all ${
-                    collected
-                      ? 'border-amber-300 bg-amber-50'
-                      : 'border-gray-200 bg-gray-50 opacity-60'
+                    collected ? 'border-amber-300 bg-amber-50' : 'border-gray-200 bg-gray-50 opacity-60'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -207,16 +265,32 @@ export default function StoryPage() {
           </div>
         )}
 
-        {/* Try Again */}
         {collectedWords.size < vocabList.length && (
           <button
-            onClick={() => router.push('/')}
+            onClick={handleBack}
             className="w-full py-3 rounded-2xl font-bold text-purple-600 border-2 border-purple-200 hover:bg-purple-50 transition-colors"
           >
-            ← Create a New Story
+            {historyId ? '← Back to History' : '← Create a New Story'}
           </button>
         )}
       </div>
     </main>
+  );
+}
+
+export default function StoryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+          <div className="text-center">
+            <div className="text-5xl mb-4 float-animation inline-block">📖</div>
+            <p className="text-xl font-bold text-purple-700">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <StoryContent />
+    </Suspense>
   );
 }

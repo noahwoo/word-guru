@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { NextRequest, NextResponse } from 'next/server';
+import { saveStory } from '@/lib/history';
 
 interface LlmConfig {
   url: string;
@@ -113,12 +114,23 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
       parsed = JSON.parse(match[0]);
     }
 
-    return NextResponse.json({
+    const entry = saveStory({
       title: parsed.title || 'A Magical Tale',
       story: parsed.story || '',
       vocabulary: parsed.vocabulary || {},
       words,
       theme,
+      difficulty,
+    });
+
+    return NextResponse.json({
+      id: entry.id,
+      title: entry.title,
+      story: entry.story,
+      vocabulary: entry.vocabulary,
+      words,
+      theme,
+      difficulty,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to generate story';

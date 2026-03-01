@@ -36,6 +36,9 @@ yarn-error.log*
 # local config with secrets
 config.yaml
 
+# runtime story history data
+/data
+
 # vercel
 .vercel
 
