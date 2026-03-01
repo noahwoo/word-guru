@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { NextRequest, NextResponse } from 'next/server';
 import { saveStory } from '@/lib/history';
+import { buildWordListPromptBlock } from '@/lib/wordlists';
 
 interface LlmConfig {
   url: string;
@@ -56,7 +57,7 @@ const DIFFICULTY_INSTRUCTIONS: Record<string, string> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { words, theme, difficulty, heroName } = await req.json();
+    const { words, theme, difficulty, heroName, grade } = await req.json();
 
     if (!words || !Array.isArray(words) || words.length < 2) {
       return NextResponse.json({ error: 'At least 2 words required' }, { status: 400 });
@@ -67,21 +68,22 @@ export async function POST(req: NextRequest) {
     const themeDesc = THEME_DESCRIPTIONS[theme] || THEME_DESCRIPTIONS.enchanted_forest;
     const difficultyInstr = DIFFICULTY_INSTRUCTIONS[difficulty] || DIFFICULTY_INSTRUCTIONS.intermediate;
     const safeHeroName = (heroName || 'Alex').slice(0, 20).replace(/[^a-zA-Z0-9 ]/g, '');
+    const wordListBlock = buildWordListPromptBlock(grade ?? 'none');
 
     const prompt = `You are a magical storyteller creating fairy tales for 10-year-old children.
 
 Create an engaging fairy tale story set in ${themeDesc}. The main hero is named ${safeHeroName}.
 
 Target vocabulary words to include: ${words.join(', ')}
-
+${wordListBlock ? `\n${wordListBlock}\n` : ''}
 Instructions:
 1. WORD LIMIT: The story must be 200 words or fewer. Count carefully.
-2. VOCABULARY LEVEL: Only use words that are as simple as or simpler than the target vocabulary words above. Do not introduce harder or more complex words than necessary.
-3. ${difficultyInstr}
-4. Naturally weave ALL the target vocabulary words into the story.
-5. When you use a target vocabulary word in the story, wrap it with double brackets like this: [[word]]
-6. Make the story exciting, age-appropriate, and fun for children.
-7. Give the story a catchy title.
+2. VOCABULARY LEVEL: Only use words that are as simple as or simpler than the target vocabulary words above. Do not introduce harder or more complex words than necessary.${wordListBlock ? '\n3. GRADE CONSTRAINT: Strictly follow the grade vocabulary list above — do not use words outside that list except for the target vocabulary words.' : ''}
+${wordListBlock ? '4' : '3'}. ${difficultyInstr}
+${wordListBlock ? '5' : '4'}. Naturally weave ALL the target vocabulary words into the story.
+${wordListBlock ? '6' : '5'}. When you use a target vocabulary word in the story, wrap it with double brackets like this: [[word]]
+${wordListBlock ? '7' : '6'}. Make the story exciting, age-appropriate, and fun for children.
+${wordListBlock ? '8' : '7'}. Give the story a catchy title.
 
 After the story, provide a JSON vocabulary section with the definition and a child-friendly example sentence for each target word.
 
@@ -135,6 +137,7 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
       words,
       theme,
       difficulty,
+      grade: grade ?? 'none',
     });
 
     return NextResponse.json({
@@ -145,6 +148,7 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
       words,
       theme,
       difficulty,
+      grade: entry.grade,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to generate story';

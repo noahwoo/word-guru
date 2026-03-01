@@ -19,6 +19,22 @@ const DIFFICULTIES = [
   { id: 'advanced', label: 'Advanced', emoji: '⭐⭐⭐', desc: 'Rich & detailed' },
 ];
 
+const GRADE_OPTIONS = [
+  { id: 'none',   label: 'No Limit',  desc: 'Any vocabulary',  group: 'school' as const },
+  { id: 'grade1', label: 'Grade 1',   desc: '~150 words',      group: 'school' as const },
+  { id: 'grade2', label: 'Grade 2',   desc: '~300 words',      group: 'school' as const },
+  { id: 'grade3', label: 'Grade 3',   desc: '~500 words',      group: 'school' as const },
+  { id: 'grade4', label: 'Grade 4',   desc: '~700 words',      group: 'school' as const },
+  { id: 'grade5', label: 'Grade 5',   desc: '~900 words',      group: 'school' as const },
+  { id: 'grade6', label: 'Grade 6',   desc: '~1100 words',     group: 'school' as const },
+  { id: 'grade7', label: 'Grade 7',   desc: '~1400 words',     group: 'school' as const },
+  { id: 'grade8', label: 'Grade 8',   desc: '~1700 words',     group: 'school' as const },
+  { id: 'grade9', label: 'Grade 9',   desc: '~2000 words',     group: 'school' as const },
+  { id: 'ket',    label: 'KET (A2)',  desc: 'Cambridge A2',    group: 'exam' as const },
+  { id: 'pet',    label: 'PET (B1)',  desc: 'Cambridge B1',    group: 'exam' as const },
+  { id: 'gre',    label: 'GRE',       desc: 'Academic vocab',  group: 'exam' as const },
+];
+
 const SAMPLE_WORDS = ['brave', 'mysterious', 'glimmer', 'ancient', 'enchanted'];
 
 export default function Home() {
@@ -27,6 +43,7 @@ export default function Home() {
   const [words, setWords] = useState<string[]>([]);
   const [selectedTheme, setSelectedTheme] = useState('enchanted_forest');
   const [difficulty, setDifficulty] = useState('intermediate');
+  const [grade, setGrade] = useState('none');
   const [heroName, setHeroName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -56,7 +73,7 @@ export default function Home() {
       const res = await fetch('/api/generate-story', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ words, theme: selectedTheme, difficulty, heroName: heroName || 'Alex' }),
+        body: JSON.stringify({ words, theme: selectedTheme, difficulty, grade, heroName: heroName || 'Alex' }),
       });
       if (!res.ok) throw new Error('Failed to generate story');
       const data = await res.json();
@@ -192,6 +209,64 @@ export default function Home() {
                   {d.label}
                 </div>
                 <div className="text-xs text-gray-400 mt-1">{d.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Vocabulary Level */}
+        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-indigo-100">
+          <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🎓 Vocabulary Level</h2>
+          <p className="text-sm text-indigo-400 mb-4">Restrict story words to match your learning level</p>
+
+          {/* No Limit */}
+          <button
+            onClick={() => setGrade('none')}
+            className={`w-full mb-4 rounded-2xl p-3 text-center border-2 transition-all ${
+              grade === 'none'
+                ? 'border-indigo-400 bg-indigo-50 shadow-md'
+                : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+            }`}
+          >
+            <span className={`font-bold text-sm ${grade === 'none' ? 'text-indigo-800' : 'text-gray-600'}`}>
+              🌟 No Limit — use any vocabulary
+            </span>
+          </button>
+
+          {/* Junior School grades */}
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Junior School</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {GRADE_OPTIONS.filter(g => g.group === 'school' && g.id !== 'none').map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGrade(g.id)}
+                className={`rounded-xl p-2 text-center border-2 transition-all ${
+                  grade === g.id
+                    ? 'border-indigo-400 bg-indigo-50 shadow-md'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                }`}
+              >
+                <div className={`font-bold text-sm ${grade === g.id ? 'text-indigo-800' : 'text-gray-600'}`}>{g.label}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{g.desc}</div>
+              </button>
+            ))}
+          </div>
+
+          {/* Exam levels */}
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Exam Prep</p>
+          <div className="flex gap-2">
+            {GRADE_OPTIONS.filter(g => g.group === 'exam').map(g => (
+              <button
+                key={g.id}
+                onClick={() => setGrade(g.id)}
+                className={`flex-1 rounded-xl p-3 text-center border-2 transition-all ${
+                  grade === g.id
+                    ? 'border-indigo-400 bg-indigo-50 shadow-md'
+                    : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                }`}
+              >
+                <div className={`font-bold text-sm ${grade === g.id ? 'text-indigo-800' : 'text-gray-600'}`}>{g.label}</div>
+                <div className="text-xs text-gray-400 mt-0.5">{g.desc}</div>
               </button>
             ))}
           </div>
