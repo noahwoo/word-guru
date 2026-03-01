@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -47,6 +47,8 @@ export default function Home() {
   const [heroName, setHeroName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fileMsg, setFileMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addWord = () => {
     const trimmed = wordInput.trim().toLowerCase();
@@ -60,6 +62,37 @@ export default function Home() {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') addWord();
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const text = (evt.target?.result as string) ?? '';
+      const parsed = text
+        .split(/\r?\n/)
+        .map(l => l.trim().toLowerCase())
+        .filter(l => l.length > 0 && /^[a-z][a-z'-]*$/.test(l));
+      if (parsed.length === 0) {
+        setFileMsg('⚠️ No valid words found in file');
+        setTimeout(() => setFileMsg(''), 4000);
+        return;
+      }
+      setWords(prev => {
+        const seen = new Set(prev);
+        const toAdd = parsed.filter(w => !seen.has(w));
+        return [...prev, ...toAdd].slice(0, 10);
+      });
+      setFileMsg(`✅ ${parsed.length} word${parsed.length !== 1 ? 's' : ''} loaded from file`);
+      setTimeout(() => setFileMsg(''), 4000);
+    };
+    reader.onerror = () => {
+      setFileMsg('❌ Could not read file');
+      setTimeout(() => setFileMsg(''), 4000);
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const generateStory = async () => {
@@ -129,14 +162,34 @@ export default function Home() {
               Add
             </button>
           </div>
-          {words.length === 0 && (
+          {/* File upload */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,text/plain"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          <div className="flex items-center gap-3 mb-3">
             <button
-              onClick={() => setWords(SAMPLE_WORDS)}
-              className="text-sm text-purple-400 underline hover:text-purple-600 mb-3 block"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={words.length >= 10}
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl border-2 border-purple-200 bg-purple-50 text-purple-600 text-sm font-semibold hover:bg-purple-100 hover:border-purple-300 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              ✨ Try sample words
+              📂 Upload from file
             </button>
-          )}
+            {fileMsg && (
+              <span className="text-xs text-purple-500 animate-pulse">{fileMsg}</span>
+            )}
+            {words.length === 0 && !fileMsg && (
+              <button
+                onClick={() => setWords(SAMPLE_WORDS)}
+                className="text-sm text-purple-400 underline hover:text-purple-600"
+              >
+                ✨ Try sample words
+              </button>
+            )}
+          </div>
           <div className="flex flex-wrap gap-1 min-h-[40px]">
             {words.map(w => (
               <span key={w} className="word-tag">
