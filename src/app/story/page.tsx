@@ -4,6 +4,8 @@ import { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 interface VocabEntry {
+  stems?: string;        // e.g. "en·chant·ed"
+  construction?: string; // e.g. "en- (into) + chant (sing) + -ed (past tense)"
   definition: string;
   example: string;
 }
@@ -198,10 +200,22 @@ function StoryContent() {
               left: Math.max(8, Math.min(tooltip.x - 144, window.innerWidth - 300)),
             }}
           >
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="text-lg font-extrabold text-amber-700 capitalize">{tooltip.word}</h3>
-              <button onClick={() => setTooltip(null)} className="text-gray-400 hover:text-gray-600 text-xl font-bold leading-none">×</button>
+            <div className="flex items-start justify-between mb-1">
+              <div>
+                <h3 className="text-lg font-extrabold text-amber-700 capitalize">{tooltip.word}</h3>
+                {data.vocabulary[tooltip.word].stems && (
+                  <p className="text-xs font-mono text-indigo-500 tracking-widest mt-0.5">
+                    {data.vocabulary[tooltip.word].stems}
+                  </p>
+                )}
+              </div>
+              <button onClick={() => setTooltip(null)} className="text-gray-400 hover:text-gray-600 text-xl font-bold leading-none ml-2 mt-0.5">×</button>
             </div>
+            {data.vocabulary[tooltip.word].construction && (
+              <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-2 py-1 mb-2">
+                {data.vocabulary[tooltip.word].construction}
+              </p>
+            )}
             <p className="text-sm text-gray-700 mb-2">
               <span className="font-semibold text-purple-700">Definition: </span>
               {data.vocabulary[tooltip.word].definition}
@@ -229,12 +243,24 @@ function StoryContent() {
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-lg">{collected ? '⭐' : '🔒'}</span>
-                    <span className={`font-extrabold capitalize text-base ${collected ? 'text-amber-700' : 'text-gray-500'}`}>
-                      {word}
-                    </span>
+                    <div>
+                      <span className={`font-extrabold capitalize text-base ${collected ? 'text-amber-700' : 'text-gray-500'}`}>
+                        {word}
+                      </span>
+                      {collected && info.stems && (
+                        <p className="text-xs font-mono text-indigo-500 tracking-widest leading-tight">
+                          {info.stems}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   {collected ? (
                     <div>
+                      {info.construction && (
+                        <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-2 py-1 mb-1">
+                          {info.construction}
+                        </p>
+                      )}
                       <p className="text-sm text-gray-700 mb-1">{info.definition}</p>
                       <p className="text-xs text-amber-600 italic">&quot;{info.example}&quot;</p>
                     </div>

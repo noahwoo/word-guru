@@ -3,6 +3,8 @@ import * as path from 'path';
 import * as os from 'os';
 
 export interface VocabEntry {
+  stems?: string;        // middle-dot separated morphemes, e.g. "en·chant·ed"
+  construction?: string; // morpheme breakdown, e.g. "en- (into) + chant (sing) + -ed (past tense)"
   definition: string;
   example: string;
 }
