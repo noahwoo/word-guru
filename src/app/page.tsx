@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -49,6 +49,12 @@ export default function Home() {
   const [error, setError] = useState('');
   const [fileMsg, setFileMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Pre-fill hero name from settings on first render
+  useEffect(() => {
+    const saved = localStorage.getItem('word-guru-hero-name');
+    if (saved) setHeroName(saved);
+  }, []);
 
   const addWord = () => {
     const trimmed = wordInput.trim().toLowerCase();
@@ -130,12 +136,20 @@ export default function Home() {
         <p className="text-lg" style={{ color: '#7c4aa0' }}>
           Learn new words through magical fairy tales! ✨
         </p>
-        <Link
-          href="/history"
-          className="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
-        >
-          📚 Story History
-        </Link>
+        <div className="flex items-center justify-center gap-3 mt-4">
+          <Link
+            href="/history"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+          >
+            📚 Story History
+          </Link>
+          <Link
+            href="/settings"
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+          >
+            ⚙️ Settings
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 pb-16 space-y-6">
