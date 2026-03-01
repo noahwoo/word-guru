@@ -14,6 +14,7 @@ export interface HistoryEntry {
   words: string[];
   theme: string;
   difficulty: string;
+  grade: string;
   story: string;
   vocabulary: Record<string, VocabEntry>;
 }
@@ -65,13 +66,14 @@ export function saveStory(
 }
 
 export function listStories(): HistorySummary[] {
-  return readAll().map(({ id, createdAt, title, words, theme, difficulty }) => ({
+  return readAll().map(({ id, createdAt, title, words, theme, difficulty, grade }) => ({
     id,
     createdAt,
     title,
     words,
     theme,
     difficulty,
+    grade,
   }));
 }
 
