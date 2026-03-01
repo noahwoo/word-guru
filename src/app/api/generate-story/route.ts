@@ -1,7 +1,28 @@
-import Anthropic from '@anthropic-ai/sdk';
+import axios from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as yaml from 'js-yaml';
 import { NextRequest, NextResponse } from 'next/server';
 
-const client = new Anthropic();
+interface LlmConfig {
+  url: string;
+  model: string;
+  bearer_token: string;
+}
+
+interface AppConfig {
+  llm: LlmConfig;
+}
+
+function loadConfig(): LlmConfig {
+  const configPath = path.join(process.cwd(), 'config.yaml');
+  const raw = fs.readFileSync(configPath, 'utf8');
+  const config = yaml.load(raw) as AppConfig;
+  if (!config?.llm?.bearer_token || config.llm.bearer_token === 'YOUR_BEARER_TOKEN_HERE') {
+    throw new Error('Bearer token not configured in config.yaml');
+  }
+  return config.llm;
+}
 
 const THEME_DESCRIPTIONS: Record<string, string> = {
   enchanted_forest: 'a magical forest with talking animals, ancient trees, glowing mushrooms, and hidden fairy villages',
@@ -25,6 +46,8 @@ export async function POST(req: NextRequest) {
     if (!words || !Array.isArray(words) || words.length < 2) {
       return NextResponse.json({ error: 'At least 2 words required' }, { status: 400 });
     }
+
+    const llm = loadConfig();
 
     const themeDesc = THEME_DESCRIPTIONS[theme] || THEME_DESCRIPTIONS.enchanted_forest;
     const difficultyInstr = DIFFICULTY_INSTRUCTIONS[difficulty] || DIFFICULTY_INSTRUCTIONS.intermediate;
@@ -61,22 +84,28 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
   }
 }`;
 
-    const message = await client.messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const response = await axios.post(
+      llm.url,
+      {
+        model: llm.model,
+        stream: false,
+        messages: [{ role: 'user', content: prompt }],
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${llm.bearer_token}`,
+        },
+      }
+    );
 
-    const rawText = message.content[0].type === 'text' ? message.content[0].text : '';
+    const rawText: string = response.data?.choices?.[0]?.message?.content ?? '';
 
-    // Parse JSON response
     let parsed;
     try {
-      // Strip potential markdown code fences
       const cleaned = rawText.replace(/^```json?\s*/i, '').replace(/\s*```$/i, '').trim();
       parsed = JSON.parse(cleaned);
     } catch {
-      // Fallback: try to extract JSON from the text
       const match = rawText.match(/\{[\s\S]*\}/);
       if (!match) throw new Error('Could not parse story response');
       parsed = JSON.parse(match[0]);
@@ -90,7 +119,7 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
       theme,
     });
   } catch (err) {
-    console.error('Story generation error:', err);
-    return NextResponse.json({ error: 'Failed to generate story' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Failed to generate story';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
