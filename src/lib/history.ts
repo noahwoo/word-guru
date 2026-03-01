@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 export interface VocabEntry {
   definition: string;
@@ -19,17 +20,26 @@ export interface HistoryEntry {
 
 export type HistorySummary = Omit<HistoryEntry, 'story' | 'vocabulary'>;
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const HISTORY_FILE = path.join(DATA_DIR, 'history.json');
-
-function ensureDataDir(): void {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+/**
+ * Resolve a writable data directory.
+ * On Vercel (read-only filesystem) fall back to /tmp so the app
+ * can still run — note that /tmp is ephemeral across invocations.
+ */
+function resolveDataDir(): string {
+  const preferred = path.join(process.cwd(), 'data');
+  try {
+    fs.mkdirSync(preferred, { recursive: true });
+    // quick write-access probe
+    fs.accessSync(preferred, fs.constants.W_OK);
+    return preferred;
+  } catch {
+    return os.tmpdir();
   }
 }
 
+const HISTORY_FILE = path.join(resolveDataDir(), 'history.json');
+
 function readAll(): HistoryEntry[] {
-  ensureDataDir();
   if (!fs.existsSync(HISTORY_FILE)) return [];
   try {
     return JSON.parse(fs.readFileSync(HISTORY_FILE, 'utf8')) as HistoryEntry[];
@@ -39,7 +49,6 @@ function readAll(): HistoryEntry[] {
 }
 
 function writeAll(entries: HistoryEntry[]): void {
-  ensureDataDir();
   fs.writeFileSync(HISTORY_FILE, JSON.stringify(entries, null, 2), 'utf8');
 }
 

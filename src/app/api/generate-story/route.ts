@@ -16,7 +16,21 @@ interface AppConfig {
 }
 
 function loadConfig(): LlmConfig {
+  // 1. Try environment variables first (works on Vercel and CI)
+  const envToken = process.env.LLM_BEARER_TOKEN;
+  if (envToken) {
+    return {
+      url: process.env.LLM_URL ?? 'https://qianfan.baidubce.com/v2/chat/completions',
+      model: process.env.LLM_MODEL ?? 'deepseek-v3.2',
+      bearer_token: envToken,
+    };
+  }
+
+  // 2. Fall back to config.yaml for local development
   const configPath = path.join(process.cwd(), 'config.yaml');
+  if (!fs.existsSync(configPath)) {
+    throw new Error('LLM not configured: set LLM_BEARER_TOKEN env var or create config.yaml');
+  }
   const raw = fs.readFileSync(configPath, 'utf8');
   const config = yaml.load(raw) as AppConfig;
   if (!config?.llm?.bearer_token || config.llm.bearer_token === 'YOUR_BEARER_TOKEN_HERE') {
