@@ -126,36 +126,36 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen" style={{ background: 'linear-gradient(135deg, #fef9f0 0%, #f0e6ff 50%, #e6f0ff 100%)' }}>
+    <main className="min-h-screen pb-safe" style={{ background: 'linear-gradient(135deg, #fef9f0 0%, #f0e6ff 50%, #e6f0ff 100%)' }}>
       {/* Header */}
-      <div className="text-center pt-10 pb-6 px-4">
-        <div className="text-6xl mb-3 float-animation inline-block">📖</div>
-        <h1 className="text-4xl font-extrabold mb-2" style={{ color: '#4a1080' }}>
+      <div className="text-center pt-8 sm:pt-10 pb-6 px-4">
+        <div className="text-5xl sm:text-6xl mb-3 float-animation inline-block">📖</div>
+        <h1 className="text-3xl sm:text-4xl font-extrabold mb-2" style={{ color: '#4a1080' }}>
           Word Guru
         </h1>
-        <p className="text-lg" style={{ color: '#7c4aa0' }}>
+        <p className="text-base sm:text-lg" style={{ color: '#7c4aa0' }}>
           Learn new words through magical fairy tales! ✨
         </p>
-        <div className="flex items-center justify-center gap-3 mt-4">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4">
           <Link
             href="/history"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
           >
             📚 Story History
           </Link>
           <Link
             href="/settings"
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
           >
             ⚙️ Settings
           </Link>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pb-16 space-y-6">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 pb-8 space-y-4 sm:space-y-6">
 
         {/* Vocabulary Words */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-purple-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-purple-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>📝 Your Vocabulary Words</h2>
           <p className="text-sm text-purple-400 mb-4">Add 2–10 words you want to learn</p>
           <div className="flex gap-2 mb-3">
@@ -216,7 +216,7 @@ export default function Home() {
         </div>
 
         {/* Hero Name */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-yellow-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-yellow-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🦸 Your Hero&apos;s Name</h2>
           <p className="text-sm text-yellow-500 mb-3">Name the main character of your story</p>
           <input
@@ -230,7 +230,7 @@ export default function Home() {
         </div>
 
         {/* Story Theme */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-blue-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-blue-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🗺️ Choose Your Story World</h2>
           <p className="text-sm text-blue-400 mb-4">Pick the setting for your fairy tale</p>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -257,7 +257,7 @@ export default function Home() {
         </div>
 
         {/* Difficulty */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-green-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-green-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>📊 Story Difficulty</h2>
           <p className="text-sm text-green-500 mb-4">How challenging should the story be?</p>
           <div className="flex gap-3">
@@ -282,7 +282,7 @@ export default function Home() {
         </div>
 
         {/* Vocabulary Level */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-indigo-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-indigo-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🎓 Vocabulary Level</h2>
           <p className="text-sm text-indigo-400 mb-4">Restrict story words to match your learning level</p>
 

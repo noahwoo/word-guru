@@ -164,26 +164,26 @@ export default function SettingsPage() {
 
   return (
     <main
-      className="min-h-screen"
+      className="min-h-screen pb-safe"
       style={{ background: 'linear-gradient(135deg, #fef9f0 0%, #f0e6ff 50%, #e6f0ff 100%)' }}
     >
       {/* Header */}
-      <div className="text-center pt-10 pb-6 px-4">
+      <div className="text-center pt-8 sm:pt-10 pb-6 px-4">
         <div className="text-5xl mb-3">⚙️</div>
-        <h1 className="text-3xl font-extrabold mb-2" style={{ color: '#4a1080' }}>Settings</h1>
+        <h1 className="text-2xl sm:text-3xl font-extrabold mb-2" style={{ color: '#4a1080' }}>Settings</h1>
         <p className="text-sm mb-4" style={{ color: '#7c4aa0' }}>Configure your Word Guru experience</p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+          className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
         >
           ← Back to Home
         </Link>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pb-16 space-y-6">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 pb-8 space-y-4 sm:space-y-6">
 
         {/* ── Hero / Role Name ─────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-yellow-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-yellow-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🦸 Default Hero Name</h2>
           <p className="text-sm text-yellow-500 mb-4">
             Pre-filled as the story hero for every new story. You can still override it per story.
@@ -212,7 +212,7 @@ export default function SettingsPage() {
         </div>
 
         {/* ── Word Lists ───────────────────────────────────────────────── */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-indigo-100">
+        <div className="bg-white rounded-3xl shadow-lg p-4 sm:p-6 border-2 border-indigo-100">
           <h2 className="text-xl font-bold mb-1" style={{ color: '#4a1080' }}>🗂️ Grade Word Lists</h2>
           <p className="text-sm text-indigo-400 mb-5">
             Edit the vocabulary for each grade level. One word per line. Changes apply immediately to new stories.
@@ -261,9 +261,9 @@ export default function SettingsPage() {
                           <textarea
                             value={state?.text ?? ''}
                             onChange={e => handleTextChange(grade.id, e.target.value)}
-                            rows={10}
+                            rows={8}
                             spellCheck={false}
-                            className="w-full font-mono text-sm border-2 border-gray-200 rounded-xl p-3 focus:border-indigo-300 focus:outline-none resize-y text-gray-700"
+                            className="w-full font-mono text-sm border-2 border-gray-200 rounded-xl p-3 focus:border-indigo-300 focus:outline-none resize-y text-gray-700 min-h-[160px]"
                             placeholder="One word per line…"
                           />
                           {/* Hidden file input */}
@@ -277,7 +277,7 @@ export default function SettingsPage() {
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <button
                               onClick={() => uploadRefs.current[grade.id]?.click()}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-600 text-sm font-semibold hover:bg-indigo-100 transition-all"
+                              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-indigo-200 bg-indigo-50 text-indigo-600 text-sm font-semibold hover:bg-indigo-100 transition-all"
                             >
                               📂 Upload file
                             </button>
@@ -285,7 +285,7 @@ export default function SettingsPage() {
                               <button
                                 onClick={() => resetWordList(grade.id)}
                                 disabled={state?.saving}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-2 border-orange-200 bg-orange-50 text-orange-600 text-sm font-semibold hover:bg-orange-100 transition-all disabled:opacity-40"
+                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border-2 border-orange-200 bg-orange-50 text-orange-600 text-sm font-semibold hover:bg-orange-100 transition-all disabled:opacity-40"
                               >
                                 🔄 Reset to default
                               </button>
@@ -293,7 +293,7 @@ export default function SettingsPage() {
                             <button
                               onClick={() => saveWordList(grade.id)}
                               disabled={state?.saving}
-                              className="ml-auto flex items-center gap-1.5 px-4 py-1.5 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50"
+                              className="ml-auto flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50"
                               style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
                             >
                               {state?.saving ? 'Saving…' : '💾 Save'}
