@@ -34,9 +34,9 @@ const THEME_DESCRIPTIONS: Record<string, string> = {
 };
 
 const DIFFICULTY_INSTRUCTIONS: Record<string, string> = {
-  beginner: 'Write a short story (3-4 paragraphs). Use simple sentences and easy vocabulary. Use each target word once or twice.',
-  intermediate: 'Write a medium-length story (5-6 paragraphs). Use clear but engaging language. Use each target word 2-3 times in natural contexts.',
-  advanced: 'Write a longer, richer story (7-8 paragraphs). Use descriptive language, vivid imagery, and varied sentence structures. Use each target word multiple times in diverse contexts.',
+  beginner: 'Use very simple, short sentences. Each target word should appear once.',
+  intermediate: 'Use clear, engaging sentences. Each target word should appear 2-3 times in natural contexts.',
+  advanced: 'Use descriptive language and varied sentence structures. Each target word should appear multiple times in diverse contexts.',
 };
 
 export async function POST(req: NextRequest) {
@@ -60,11 +60,13 @@ Create an engaging fairy tale story set in ${themeDesc}. The main hero is named 
 Target vocabulary words to include: ${words.join(', ')}
 
 Instructions:
-1. ${difficultyInstr}
-2. Naturally weave ALL the target vocabulary words into the story.
-3. When you use a target vocabulary word in the story, wrap it with double brackets like this: [[word]]
-4. Make the story exciting, age-appropriate, and fun for children.
-5. Give the story a catchy title.
+1. WORD LIMIT: The story must be 200 words or fewer. Count carefully.
+2. VOCABULARY LEVEL: Only use words that are as simple as or simpler than the target vocabulary words above. Do not introduce harder or more complex words than necessary.
+3. ${difficultyInstr}
+4. Naturally weave ALL the target vocabulary words into the story.
+5. When you use a target vocabulary word in the story, wrap it with double brackets like this: [[word]]
+6. Make the story exciting, age-appropriate, and fun for children.
+7. Give the story a catchy title.
 
 After the story, provide a JSON vocabulary section with the definition and a child-friendly example sentence for each target word.
 
