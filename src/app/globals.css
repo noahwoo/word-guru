@@ -5,62 +5,112 @@
   --foreground: #2d1b69;
 }
 
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+
+html {
+  /* Prevent font-size inflation on landscape orientation change (iOS) */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
 }
+
+/* Remove tap highlight flash on Android / iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reduce 300ms tap delay on interactive elements */
+button,
+a,
+input,
+textarea,
+select,
+label {
+  touch-action: manipulation;
+}
+
+/* ─── Story words ────────────────────────────────────────────────────────── */
 
 .story-word {
   background: linear-gradient(135deg, #ffd700, #ffaa00);
   color: #5a3200;
-  padding: 1px 4px;
+  /* Slightly larger tap target on mobile */
+  padding: 2px 5px;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
   border-bottom: 2px solid #ff8c00;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   display: inline;
+  /* Prevent long-press text selection on mobile */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.story-word:hover {
+.story-word:hover,
+.story-word:active {
   background: linear-gradient(135deg, #ffaa00, #ff8c00);
-  transform: scale(1.05);
   box-shadow: 0 2px 8px rgba(255, 140, 0, 0.4);
 }
 
-.story-text {
-  font-size: 1.15rem;
-  line-height: 1.9;
-  color: #2d1b69;
+@media (hover: hover) {
+  .story-word:hover {
+    transform: scale(1.05);
+  }
 }
+
+/* ─── Story text ─────────────────────────────────────────────────────────── */
+
+.story-text {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: #2d1b69;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+@media (min-width: 480px) {
+  .story-text {
+    font-size: 1.15rem;
+    line-height: 1.9;
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  50%       { transform: translateY(-10px); }
 }
 
 @keyframes sparkle {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(0.9); }
-}
-
-.float-animation {
-  animation: float 3s ease-in-out infinite;
-}
-
-.sparkle-animation {
-  animation: sparkle 2s ease-in-out infinite;
+  50%       { opacity: 0.6; transform: scale(0.9); }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.fade-in {
-  animation: fadeIn 0.5s ease-out forwards;
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
+
+.float-animation   { animation: float   3s ease-in-out infinite; }
+.sparkle-animation { animation: sparkle 2s ease-in-out infinite; }
+.fade-in           { animation: fadeIn  0.4s ease-out forwards; }
+.slide-up          { animation: slideUp 0.3s ease-out forwards; }
+
+/* ─── Word tags ──────────────────────────────────────────────────────────── */
 
 .word-tag {
   display: inline-flex;
@@ -70,23 +120,39 @@ body {
   color: #4a1080;
   padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   border: 2px solid #9b59b6;
-  margin: 4px;
+  margin: 2px;
+  /* Prevent wrapping mid-word */
+  white-space: nowrap;
 }
 
+/* ─── Theme cards ────────────────────────────────────────────────────────── */
+
 .theme-card {
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 
-.theme-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+/* Only animate on pointer devices (no hover on touch) */
+@media (hover: hover) {
+  .theme-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .theme-card.selected {
-  transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+}
+
+/* ─── Safe areas (iOS notch / home indicator) ────────────────────────────── */
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }

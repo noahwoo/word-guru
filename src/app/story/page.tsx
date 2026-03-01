@@ -22,6 +22,7 @@ interface StoryData {
 
 interface TooltipState {
   word: string;
+  // Viewport coordinates (from getBoundingClientRect — do NOT add scrollY)
   x: number;
   y: number;
 }
@@ -45,7 +46,8 @@ function parseStory(
             isVocab
               ? (e) => {
                   const rect = (e.target as HTMLElement).getBoundingClientRect();
-                  onWordClick(word, rect.left + rect.width / 2, rect.bottom + window.scrollY);
+                  // Use viewport coords only — tooltip is position:fixed
+                  onWordClick(word, rect.left + rect.width / 2, rect.bottom);
                 }
               : undefined
           }
@@ -77,8 +79,18 @@ function StoryContent() {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [collectedWords, setCollectedWords] = useState<Set<string>>(new Set());
   const [loadError, setLoadError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
+  // Detect mobile viewport
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  // Load story data
   useEffect(() => {
     if (historyId) {
       fetch(`/api/history/${historyId}`)
@@ -103,14 +115,19 @@ function StoryContent() {
     }
   }, [historyId, router]);
 
+  // Dismiss tooltip on outside tap / click
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (e: MouseEvent | TouchEvent) => {
       if (tooltipRef.current && !tooltipRef.current.contains(e.target as Node)) {
         setTooltip(null);
       }
     };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler);
+    };
   }, []);
 
   const handleWordClick = (word: string, x: number, y: number) => {
@@ -119,16 +136,15 @@ function StoryContent() {
   };
 
   const handleBack = () => {
-    if (historyId) {
-      router.push('/history');
-    } else {
-      router.push('/');
-    }
+    router.push(historyId ? '/history' : '/');
   };
+
+  // ── Loading / error states ────────────────────────────────────────────────
 
   if (loadError) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+      <div className="min-h-screen flex items-center justify-center px-4"
+        style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
         <div className="text-center">
           <div className="text-5xl mb-4">😔</div>
           <p className="text-xl font-bold text-purple-700 mb-4">{loadError}</p>
@@ -146,7 +162,8 @@ function StoryContent() {
 
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+      <div className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
         <div className="text-center">
           <div className="text-5xl mb-4 float-animation inline-block">📖</div>
           <p className="text-xl font-bold text-purple-700">Loading your story...</p>
@@ -157,80 +174,118 @@ function StoryContent() {
 
   const vocabList = Object.entries(data.vocabulary);
 
+  // ── Tooltip content (shared between mobile sheet and desktop popup) ───────
+
+  const tooltipContent = tooltip && data.vocabulary[tooltip.word] && (() => {
+    const info = data.vocabulary[tooltip.word];
+    return (
+      <>
+        <div className="flex items-start justify-between mb-1">
+          <div>
+            <h3 className="text-lg font-extrabold text-amber-700 capitalize">{tooltip.word}</h3>
+            {info.stems && (
+              <p className="text-xs font-mono text-indigo-500 tracking-widest mt-0.5">{info.stems}</p>
+            )}
+          </div>
+          <button
+            onClick={() => setTooltip(null)}
+            className="text-gray-400 hover:text-gray-600 text-2xl font-bold leading-none ml-3 mt-0.5 p-1"
+          >
+            ×
+          </button>
+        </div>
+        {info.construction && (
+          <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-2 py-1.5 mb-2">
+            {info.construction}
+          </p>
+        )}
+        <p className="text-sm text-gray-700 mb-2">
+          <span className="font-semibold text-purple-700">Definition: </span>
+          {info.definition}
+        </p>
+        <p className="text-sm text-gray-600 bg-amber-50 rounded-xl p-2">
+          <span className="font-semibold text-amber-700">Example: </span>
+          {info.example}
+        </p>
+      </>
+    );
+  })();
+
+  // ── Main render ───────────────────────────────────────────────────────────
+
   return (
-    <main className="min-h-screen pb-16" style={{ background: 'linear-gradient(135deg, #fef9f0 0%, #f0e6ff 50%, #e6f0ff 100%)' }}>
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm px-4 py-3 flex items-center justify-between">
+    <main className="min-h-screen pb-safe" style={{ background: 'linear-gradient(135deg, #fef9f0 0%, #f0e6ff 50%, #e6f0ff 100%)' }}>
+
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm px-4 py-3 flex items-center justify-between pt-safe">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-purple-600 font-bold hover:text-purple-800 transition-colors"
+          className="flex items-center gap-1 text-purple-600 font-bold text-sm sm:text-base"
         >
           {historyId ? '← History' : '← New Story'}
         </button>
-        <div className="text-sm font-semibold text-purple-500">
-          📚 {collectedWords.size}/{vocabList.length} words collected
+        <div className="text-xs sm:text-sm font-semibold text-purple-500">
+          📚 {collectedWords.size}/{vocabList.length} collected
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pt-8 space-y-6 fade-in">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 pt-6 sm:pt-8 space-y-5 sm:space-y-6 fade-in pb-8">
 
-        {/* Story Title */}
-        <div className="text-center">
-          <div className="text-4xl mb-3 sparkle-animation inline-block">✨</div>
-          <h1 className="text-3xl font-extrabold" style={{ color: '#4a1080' }}>{data.title}</h1>
-          <p className="text-sm text-purple-400 mt-2">
-            Tap the <span className="story-word text-xs px-1">golden words</span> to learn their meaning!
+        {/* Story title */}
+        <div className="text-center px-2">
+          <div className="text-3xl sm:text-4xl mb-3 sparkle-animation inline-block">✨</div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold" style={{ color: '#4a1080' }}>{data.title}</h1>
+          <p className="text-xs sm:text-sm text-purple-400 mt-2">
+            Tap the <span className="story-word px-1">golden words</span> to learn their meaning!
           </p>
         </div>
 
-        {/* Story Text */}
-        <div className="bg-white rounded-3xl shadow-lg p-8 border-2 border-purple-100 relative">
+        {/* Story text */}
+        <div className="bg-white rounded-3xl shadow-lg p-5 sm:p-8 border-2 border-purple-100 relative">
           <div className="story-text">
             {parseStory(data.story, data.vocabulary, handleWordClick)}
           </div>
         </div>
 
-        {/* Word Tooltip */}
-        {tooltip && data.vocabulary[tooltip.word] && (
+        {/* ── Mobile bottom-sheet tooltip ────────────────────────────────── */}
+        {tooltip && isMobile && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/30 z-40"
+              onClick={() => setTooltip(null)}
+            />
+            {/* Sheet */}
+            <div
+              ref={tooltipRef}
+              className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl border-t-2 border-amber-300 px-5 pt-4 pb-safe slide-up"
+              style={{ paddingBottom: `max(env(safe-area-inset-bottom, 16px), 16px)` }}
+            >
+              {/* Drag handle hint */}
+              <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
+              {tooltipContent}
+            </div>
+          </>
+        )}
+
+        {/* ── Desktop floating tooltip ───────────────────────────────────── */}
+        {tooltip && !isMobile && (
           <div
             ref={tooltipRef}
-            className="fixed z-50 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 p-5 max-w-xs w-72 fade-in"
+            className="fixed z-50 bg-white rounded-2xl shadow-2xl border-2 border-amber-300 p-5 w-72 fade-in"
             style={{
-              top: Math.min(tooltip.y + 8, window.innerHeight - 200),
-              left: Math.max(8, Math.min(tooltip.x - 144, window.innerWidth - 300)),
+              top:  Math.min(tooltip.y + 8,  window.innerHeight - 300),
+              left: Math.max(8, Math.min(tooltip.x - 144, window.innerWidth - 296)),
             }}
           >
-            <div className="flex items-start justify-between mb-1">
-              <div>
-                <h3 className="text-lg font-extrabold text-amber-700 capitalize">{tooltip.word}</h3>
-                {data.vocabulary[tooltip.word].stems && (
-                  <p className="text-xs font-mono text-indigo-500 tracking-widest mt-0.5">
-                    {data.vocabulary[tooltip.word].stems}
-                  </p>
-                )}
-              </div>
-              <button onClick={() => setTooltip(null)} className="text-gray-400 hover:text-gray-600 text-xl font-bold leading-none ml-2 mt-0.5">×</button>
-            </div>
-            {data.vocabulary[tooltip.word].construction && (
-              <p className="text-xs text-indigo-600 bg-indigo-50 rounded-lg px-2 py-1 mb-2">
-                {data.vocabulary[tooltip.word].construction}
-              </p>
-            )}
-            <p className="text-sm text-gray-700 mb-2">
-              <span className="font-semibold text-purple-700">Definition: </span>
-              {data.vocabulary[tooltip.word].definition}
-            </p>
-            <p className="text-sm text-gray-600 bg-amber-50 rounded-xl p-2">
-              <span className="font-semibold text-amber-700">Example: </span>
-              {data.vocabulary[tooltip.word].example}
-            </p>
+            {tooltipContent}
           </div>
         )}
 
-        {/* Vocabulary Treasure Chest */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 border-2 border-yellow-200">
-          <h2 className="text-xl font-extrabold mb-1" style={{ color: '#4a1080' }}>🏆 Vocabulary Treasure Chest</h2>
-          <p className="text-sm text-yellow-600 mb-4">Click the golden words in the story to collect them!</p>
+        {/* Vocabulary treasure chest */}
+        <div className="bg-white rounded-3xl shadow-lg p-5 sm:p-6 border-2 border-yellow-200">
+          <h2 className="text-lg sm:text-xl font-extrabold mb-1" style={{ color: '#4a1080' }}>🏆 Vocabulary Treasure Chest</h2>
+          <p className="text-xs sm:text-sm text-yellow-600 mb-4">Tap the golden words in the story to collect them!</p>
           <div className="space-y-3">
             {vocabList.map(([word, info]) => {
               const collected = collectedWords.has(word);
@@ -273,14 +328,14 @@ function StoryContent() {
           </div>
         </div>
 
-        {/* Completion Banner */}
+        {/* Completion banner */}
         {collectedWords.size === vocabList.length && vocabList.length > 0 && (
           <div
             className="rounded-3xl p-6 text-center text-white shadow-xl fade-in"
             style={{ background: 'linear-gradient(135deg, #7c3aed, #db2777)' }}
           >
             <div className="text-5xl mb-3">🎉</div>
-            <h2 className="text-2xl font-extrabold mb-2">Amazing! You collected all the words!</h2>
+            <h2 className="text-xl sm:text-2xl font-extrabold mb-2">Amazing! You collected all the words!</h2>
             <p className="text-purple-200 mb-4">You&apos;re a true Word Guru! ✨</p>
             <button
               onClick={() => router.push('/')}
@@ -308,7 +363,8 @@ export default function StoryPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
+        <div className="min-h-screen flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #fef9f0, #f0e6ff)' }}>
           <div className="text-center">
             <div className="text-5xl mb-4 float-animation inline-block">📖</div>
             <p className="text-xl font-bold text-purple-700">Loading...</p>
