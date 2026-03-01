@@ -85,7 +85,11 @@ ${wordListBlock ? '6' : '5'}. When you use a target vocabulary word in the story
 ${wordListBlock ? '7' : '6'}. Make the story exciting, age-appropriate, and fun for children.
 ${wordListBlock ? '8' : '7'}. Give the story a catchy title.
 
-After the story, provide a JSON vocabulary section with the definition and a child-friendly example sentence for each target word.
+After the story, provide a JSON vocabulary section for each target word with:
+- stems: the word split into its morphemes (roots, prefixes, suffixes) separated by middle dots (·), e.g. "un·break·able"
+- construction: a brief explanation of how those morphemes combine, e.g. "un- (not) + break (to fracture) + -able (can be done)"
+- definition: a clear, simple definition suitable for a 10-year-old
+- example: a short, child-friendly example sentence
 
 Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
 {
@@ -93,10 +97,14 @@ Respond with ONLY valid JSON in this exact format (no markdown, no extra text):
   "story": "Full story text here with [[vocabulary]] words in double brackets...",
   "vocabulary": {
     "word1": {
+      "stems": "pre·dict·ion",
+      "construction": "pre- (before) + dict (to say) + -ion (noun suffix) → a forecast",
       "definition": "A clear, simple definition suitable for a 10-year-old",
       "example": "A short example sentence using the word"
     },
     "word2": {
+      "stems": "en·chant·ed",
+      "construction": "en- (into/cause) + chant (to sing) + -ed (past tense) → put under a magical spell",
       "definition": "...",
       "example": "..."
     }
