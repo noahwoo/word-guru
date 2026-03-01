@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const THEMES = [
   { id: 'enchanted_forest', label: 'Enchanted Forest', emoji: '🌲', border: 'border-green-400', bg: 'bg-green-50' },
@@ -79,6 +80,12 @@ export default function Home() {
         <p className="text-lg" style={{ color: '#7c4aa0' }}>
           Learn new words through magical fairy tales! ✨
         </p>
+        <Link
+          href="/history"
+          className="inline-flex items-center gap-2 mt-4 px-5 py-2 rounded-2xl font-bold text-purple-700 border-2 border-purple-200 bg-white hover:bg-purple-50 hover:border-purple-400 transition-all shadow-sm text-sm"
+        >
+          📚 Story History
+        </Link>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 pb-16 space-y-6">
