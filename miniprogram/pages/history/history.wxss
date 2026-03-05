@@ -1,0 +1,65 @@
+/* pages/history/history.wxss */
+
+.story-card {
+  cursor: pointer;
+}
+
+.story-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.story-theme-emoji {
+  font-size: 48rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+
+.story-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.story-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rpx;
+}
+
+.story-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  flex: 1;
+  margin-right: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-stars {
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.story-date {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-muted);
+  margin-bottom: 12rpx;
+}
+
+.word-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6rpx;
+}
+
+.story-arrow {
+  font-size: 40rpx;
+  color: var(--color-muted);
+  flex-shrink: 0;
+  align-self: center;
+}

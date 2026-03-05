@@ -1,0 +1,153 @@
+/* app.wxss — global design tokens and shared utilities */
+page {
+  --color-primary: #4a1080;
+  --color-primary-mid: #7c3aed;
+  --color-accent: #db2777;
+  --color-gold: #ffd700;
+  --color-gold-dark: #ff8c00;
+  --color-bg: #fef9f0;
+  --color-card: #ffffff;
+  --color-text: #2d1b69;
+  --color-muted: #9b7cc0;
+  background-color: var(--color-bg);
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: var(--color-text);
+  box-sizing: border-box;
+}
+
+.page-container {
+  padding: 24rpx 24rpx 120rpx;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+/* Card */
+.card {
+  background: var(--color-card);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(74, 16, 128, 0.08);
+}
+
+.card-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 8rpx;
+}
+
+.card-hint {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+  margin-bottom: 20rpx;
+}
+
+/* Primary gradient button */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 28rpx 0;
+  border-radius: 24rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  border: none;
+  margin-bottom: 24rpx;
+}
+
+.btn-primary[disabled] {
+  opacity: 0.55;
+}
+
+/* Word tag pill */
+.word-tag {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #e0d0ff, #c0a8ff);
+  color: var(--color-primary);
+  padding: 6rpx 20rpx;
+  border-radius: 40rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: 2rpx solid #9b59b6;
+  margin: 4rpx;
+}
+
+/* Highlighted vocabulary word in story */
+.story-word {
+  display: inline;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #5a3200;
+  padding: 2rpx 8rpx;
+  border-radius: 6rpx;
+  font-weight: 600;
+  border-bottom: 3rpx solid var(--color-gold-dark);
+}
+
+.story-word--collected {
+  background: linear-gradient(135deg, #86efac, #4ade80);
+  color: #14532d;
+  border-bottom-color: #16a34a;
+}
+
+/* Text input */
+.text-input {
+  width: 100%;
+  border: 2rpx solid #e0d0ff;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: var(--color-text);
+  background: #faf5ff;
+  box-sizing: border-box;
+}
+
+/* Error banner */
+.error-banner {
+  background: #fef2f2;
+  border: 2rpx solid #fca5a5;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 24rpx;
+  color: #dc2626;
+  font-size: 26rpx;
+}
+
+/* Center state (loading/empty) */
+.center-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  text-align: center;
+}
+
+.emoji-large {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.state-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 12rpx;
+}
+
+.state-sub {
+  font-size: 28rpx;
+  color: var(--color-muted);
+  margin-bottom: 32rpx;
+}
+
+.state-text {
+  font-size: 28rpx;
+  color: var(--color-muted);
+}

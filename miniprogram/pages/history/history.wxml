@@ -1,0 +1,43 @@
+<view class="page-container">
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="center-state">
+    <text class="emoji-large">📖</text>
+    <text class="state-text">Loading history...</text>
+  </view>
+
+  <!-- Empty -->
+  <view wx:elif="{{empty}}" class="center-state">
+    <text class="emoji-large">🌟</text>
+    <text class="state-title">No stories yet!</text>
+    <text class="state-sub">Generate your first magical story.</text>
+    <button class="btn-primary" bind:tap="onCreateStory">✨ Create a Story</button>
+  </view>
+
+  <!-- Story list -->
+  <view wx:else>
+    <view
+      wx:for="{{stories}}" wx:key="id"
+      class="story-card card"
+      bind:tap="onTapStory" data-id="{{item.id}}"
+    >
+      <view class="story-row">
+        <text class="story-theme-emoji">{{item.themeEmoji}}</text>
+        <view class="story-info">
+          <view class="story-title-row">
+            <text class="story-title">{{item.title}}</text>
+            <text class="story-stars">{{item.diffStars}}</text>
+          </view>
+          <text class="story-date">{{item.formattedDate}}</text>
+          <view class="word-tags-row">
+            <view wx:for="{{item.words}}" wx:key="*this" wx:for-item="word" class="word-tag">
+              <text>{{word}}</text>
+            </view>
+          </view>
+        </view>
+        <text class="story-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+</view>

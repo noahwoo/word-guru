@@ -1,0 +1,249 @@
+/* pages/index/index.wxss */
+
+.header {
+  text-align: center;
+  padding: 40rpx 0 32rpx;
+}
+
+.header-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.header-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: var(--color-muted);
+  margin-top: 8rpx;
+}
+
+/* Word input row */
+.word-input-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.word-input {
+  flex: 1;
+}
+
+.btn-add {
+  flex-shrink: 0;
+  padding: 0 32rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  border: none;
+}
+
+.btn-add[disabled] {
+  opacity: 0.4;
+}
+
+/* Actions row */
+.word-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+  flex-wrap: wrap;
+}
+
+.btn-file,
+.btn-sample {
+  padding: 12rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  border: 2rpx solid #c0a8ff;
+  background: #f5f0ff;
+  color: var(--color-primary);
+}
+
+.btn-file[disabled] {
+  opacity: 0.4;
+}
+
+.file-msg {
+  font-size: 24rpx;
+  color: #059669;
+}
+
+/* Word tags */
+.word-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+  min-height: 40rpx;
+}
+
+.word-remove {
+  color: #9b7cc0;
+  font-weight: 700;
+  margin-left: 4rpx;
+}
+
+.word-count {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-muted);
+  text-align: right;
+}
+
+/* Theme grid */
+.theme-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.theme-item {
+  flex: 1 1 28%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 8rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #e0d0ff;
+  background: #faf5ff;
+  position: relative;
+}
+
+.theme-item--selected {
+  border-color: var(--color-primary-mid);
+  background: #ede9fe;
+}
+
+.theme-emoji {
+  font-size: 40rpx;
+  margin-bottom: 8rpx;
+}
+
+.theme-label {
+  font-size: 22rpx;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-align: center;
+}
+
+.theme-check {
+  position: absolute;
+  top: 8rpx;
+  right: 12rpx;
+  font-size: 24rpx;
+  color: var(--color-primary-mid);
+  font-weight: 800;
+}
+
+/* Difficulty row */
+.difficulty-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.difficulty-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 8rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #e0d0ff;
+  background: #faf5ff;
+}
+
+.difficulty-item--selected {
+  border-color: var(--color-primary-mid);
+  background: #ede9fe;
+}
+
+.diff-emoji {
+  font-size: 28rpx;
+}
+
+.diff-label {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 4rpx 0;
+}
+
+.diff-desc {
+  font-size: 20rpx;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+/* Grade section */
+.grade-none {
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #e0d0ff;
+  background: #faf5ff;
+  margin-bottom: 20rpx;
+}
+
+.grade-none--selected,
+.grade-item--selected {
+  border-color: var(--color-primary-mid);
+  background: #ede9fe;
+}
+
+.grade-none-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.grade-group-label {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--color-muted);
+  margin-bottom: 12rpx;
+  text-transform: uppercase;
+  letter-spacing: 2rpx;
+}
+
+.grade-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.grade-exam-row {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.grade-item {
+  padding: 12rpx 20rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid #e0d0ff;
+  background: #faf5ff;
+  min-width: 100rpx;
+  text-align: center;
+}
+
+.grade-item-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.grade-item-desc {
+  display: block;
+  font-size: 20rpx;
+  color: var(--color-muted);
+}
