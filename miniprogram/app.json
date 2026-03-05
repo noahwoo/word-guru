@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/story/story",
+    "pages/history/history",
+    "pages/settings/settings"
+  ],
+  "tabBar": {
+    "color": "#9b7cc0",
+    "selectedColor": "#4a1080",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "创作",
+        "iconPath": "assets/icons/create.png",
+        "selectedIconPath": "assets/icons/create-active.png"
+      },
+      {
+        "pagePath": "pages/history/history",
+        "text": "历史",
+        "iconPath": "assets/icons/history.png",
+        "selectedIconPath": "assets/icons/history-active.png"
+      },
+      {
+        "pagePath": "pages/settings/settings",
+        "text": "设置",
+        "iconPath": "assets/icons/settings.png",
+        "selectedIconPath": "assets/icons/settings-active.png"
+      }
+    ]
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4a1080",
+    "navigationBarTitleText": "Word Guru",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#fef9f0"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

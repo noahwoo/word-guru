@@ -1,0 +1,68 @@
+<scroll-view class="page-container" scroll-y>
+
+  <!-- Hero Name -->
+  <view class="card">
+    <text class="card-title">🦸 Default Hero Name</text>
+    <text class="card-hint">Used when no name is entered on the story page</text>
+    <view class="hero-row">
+      <input
+        class="text-input hero-input"
+        value="{{heroName}}"
+        bind:input="onHeroNameInput"
+        placeholder="Alex"
+        maxlength="20"
+      />
+      <button class="btn-save" bind:tap="onSaveHeroName">Save</button>
+    </view>
+    <text wx:if="{{heroMsg}}" class="success-msg">{{heroMsg}}</text>
+  </view>
+
+  <!-- Word List Management -->
+  <view class="card">
+    <text class="card-title">📚 Grade Word Lists</text>
+    <text class="card-hint">Customise the vocabulary for each grade level</text>
+
+    <view wx:for="{{grades}}" wx:key="id" class="grade-accordion">
+      <!-- Accordion header -->
+      <view class="accordion-header" bind:tap="onToggleGrade" data-id="{{item.id}}">
+        <view class="accordion-left">
+          <text class="accordion-label">{{item.label}}</text>
+          <text wx:if="{{item.isCustom}}" class="badge-custom">Custom</text>
+          <text wx:else class="badge-builtin">Built-in</text>
+        </view>
+        <text class="accordion-arrow">{{openGradeId === item.id ? '▲' : '▼'}}</text>
+      </view>
+
+      <!-- Accordion content -->
+      <view wx:if="{{openGradeId === item.id}}" class="accordion-content">
+        <text class="grade-desc">{{item.description}}</text>
+        <text class="word-count-label">{{item.wordCount}} words</text>
+
+        <textarea
+          class="word-list-textarea"
+          value="{{item.text}}"
+          bind:input="onWordListTextInput"
+          data-id="{{item.id}}"
+          placeholder="One word per line..."
+          auto-height
+          maxlength="-1"
+        />
+
+        <text wx:if="{{item.msg}}" class="grade-msg">{{item.msg}}</text>
+
+        <view class="accordion-actions">
+          <button class="btn-upload" bind:tap="onUploadWordList" data-id="{{item.id}}">
+            📂 Upload .txt
+          </button>
+          <button class="btn-reset" bind:tap="onResetWordList" data-id="{{item.id}}">
+            ↩ Reset
+          </button>
+          <button class="btn-save-list" bind:tap="onSaveWordList" data-id="{{item.id}}">
+            ✅ Save
+          </button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</scroll-view>

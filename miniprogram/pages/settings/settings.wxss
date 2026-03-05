@@ -1,0 +1,162 @@
+/* pages/settings/settings.wxss */
+
+/* Hero name row */
+.hero-row {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
+}
+
+.hero-input {
+  flex: 1;
+}
+
+.btn-save {
+  flex-shrink: 0;
+  padding: 0 32rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  border: none;
+}
+
+.success-msg {
+  display: block;
+  font-size: 24rpx;
+  color: #059669;
+  margin-top: 8rpx;
+}
+
+/* Grade accordion */
+.grade-accordion {
+  border: 2rpx solid #e0d0ff;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  background: #faf5ff;
+}
+
+.accordion-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.accordion-label {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.badge-custom {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #7c3aed;
+  background: #ede9fe;
+  border-radius: 8rpx;
+  padding: 4rpx 12rpx;
+  border: 1rpx solid #c4b5fd;
+}
+
+.badge-builtin {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: #f3f0ff;
+  border-radius: 8rpx;
+  padding: 4rpx 12rpx;
+  border: 1rpx solid #e0d0ff;
+}
+
+.accordion-arrow {
+  font-size: 24rpx;
+  color: var(--color-muted);
+}
+
+.accordion-content {
+  padding: 24rpx;
+  border-top: 2rpx solid #e0d0ff;
+  background: #fff;
+}
+
+.grade-desc {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-muted);
+  margin-bottom: 8rpx;
+}
+
+.word-count-label {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-muted);
+  margin-bottom: 16rpx;
+}
+
+.word-list-textarea {
+  width: 100%;
+  min-height: 200rpx;
+  border: 2rpx solid #e0d0ff;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  font-size: 24rpx;
+  color: var(--color-text);
+  background: #faf5ff;
+  box-sizing: border-box;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.grade-msg {
+  display: block;
+  font-size: 24rpx;
+  color: #059669;
+  margin-bottom: 16rpx;
+}
+
+.accordion-actions {
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.btn-upload,
+.btn-reset,
+.btn-save-list {
+  flex: 1;
+  min-width: 140rpx;
+  padding: 16rpx 0;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+.btn-upload {
+  background: #f5f0ff;
+  color: var(--color-primary);
+  border: 2rpx solid #c0a8ff;
+}
+
+.btn-reset {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 2rpx solid #fed7aa;
+}
+
+.btn-save-list {
+  background: linear-gradient(135deg, #7c3aed, #db2777);
+  color: #fff;
+}

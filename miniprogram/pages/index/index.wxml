@@ -1,0 +1,133 @@
+<scroll-view class="page-container" scroll-y>
+
+  <!-- Header -->
+  <view class="header">
+    <text class="header-title">📖 Word Guru</text>
+    <text class="header-subtitle">Learn words through magical fairy tales! ✨</text>
+  </view>
+
+  <!-- Vocabulary Words -->
+  <view class="card">
+    <text class="card-title">📝 Your Vocabulary Words</text>
+    <text class="card-hint">Add 2–10 words you want to learn</text>
+    <view class="word-input-row">
+      <input
+        class="text-input word-input"
+        placeholder="Type a word..."
+        value="{{wordInput}}"
+        bind:input="onWordInput"
+        bind:confirm="onAddWord"
+        confirm-type="done"
+        maxlength="30"
+      />
+      <button class="btn-add" bind:tap="onAddWord" disabled="{{words.length >= 10}}">Add</button>
+    </view>
+    <view class="word-actions-row">
+      <button class="btn-file" bind:tap="onUploadFile" disabled="{{words.length >= 10}}">
+        📂 Upload .txt
+      </button>
+      <button wx:if="{{words.length === 0}}" class="btn-sample" bind:tap="onUseSampleWords">
+        ✨ Sample words
+      </button>
+      <text wx:if="{{fileMsg}}" class="file-msg">{{fileMsg}}</text>
+    </view>
+    <view class="word-tags-row">
+      <view wx:for="{{words}}" wx:key="*this" class="word-tag">
+        <text>{{item}}</text>
+        <text class="word-remove" bind:tap="onRemoveWord" data-word="{{item}}"> ×</text>
+      </view>
+    </view>
+    <text class="word-count">{{words.length}}/10 words added</text>
+  </view>
+
+  <!-- Hero Name -->
+  <view class="card">
+    <text class="card-title">🦸 Your Hero's Name</text>
+    <input
+      class="text-input"
+      value="{{heroName}}"
+      bind:input="onHeroNameInput"
+      placeholder="Alex (default)"
+      maxlength="20"
+    />
+  </view>
+
+  <!-- Story Theme -->
+  <view class="card">
+    <text class="card-title">🗺️ Choose Your Story World</text>
+    <view class="theme-grid">
+      <view
+        wx:for="{{themes}}" wx:key="id"
+        class="theme-item {{selectedTheme === item.id ? 'theme-item--selected' : ''}}"
+        bind:tap="onSelectTheme" data-id="{{item.id}}"
+      >
+        <text class="theme-emoji">{{item.emoji}}</text>
+        <text class="theme-label">{{item.label}}</text>
+        <text wx:if="{{selectedTheme === item.id}}" class="theme-check">✓</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Difficulty -->
+  <view class="card">
+    <text class="card-title">📊 Story Difficulty</text>
+    <view class="difficulty-row">
+      <view
+        wx:for="{{difficulties}}" wx:key="id"
+        class="difficulty-item {{difficulty === item.id ? 'difficulty-item--selected' : ''}}"
+        bind:tap="onSelectDifficulty" data-id="{{item.id}}"
+      >
+        <text class="diff-emoji">{{item.emoji}}</text>
+        <text class="diff-label">{{item.label}}</text>
+        <text class="diff-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Vocabulary Level -->
+  <view class="card">
+    <text class="card-title">🎓 Vocabulary Level</text>
+    <view
+      class="grade-none {{gradeNoneSelected ? 'grade-item--selected' : ''}}"
+      bind:tap="onSelectGradeNone"
+    >
+      <text class="grade-none-label">🌟 No Limit — any vocabulary</text>
+    </view>
+
+    <text class="grade-group-label">Junior School</text>
+    <view class="grade-grid">
+      <view
+        wx:for="{{gradeSchoolOptions}}" wx:key="id"
+        class="grade-item {{grade === item.id ? 'grade-item--selected' : ''}}"
+        bind:tap="onSelectGrade" data-id="{{item.id}}"
+      >
+        <text class="grade-item-label">{{item.label}}</text>
+        <text class="grade-item-desc">{{item.desc}}</text>
+      </view>
+    </view>
+
+    <text class="grade-group-label">Exam Prep</text>
+    <view class="grade-exam-row">
+      <view
+        wx:for="{{gradeExamOptions}}" wx:key="id"
+        class="grade-item {{grade === item.id ? 'grade-item--selected' : ''}}"
+        bind:tap="onSelectGrade" data-id="{{item.id}}"
+      >
+        <text class="grade-item-label">{{item.label}}</text>
+        <text class="grade-item-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Error -->
+  <view wx:if="{{error}}" class="error-banner">
+    <text>{{error}}</text>
+  </view>
+
+  <!-- Generate button -->
+  <button class="btn-primary" bind:tap="onGenerateStory" disabled="{{isLoading || words.length < 2}}">
+    <text wx:if="{{!isLoading}}">✨ Generate My Story!</text>
+    <text wx:if="{{isLoading}}">🪄 Weaving your fairy tale...</text>
+  </button>
+
+</scroll-view>

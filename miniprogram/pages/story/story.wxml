@@ -1,0 +1,121 @@
+<view class="page-container">
+
+  <!-- Error state -->
+  <view wx:if="{{loadError}}" class="center-state">
+    <text class="emoji-large">😔</text>
+    <text class="state-title">Story Not Found</text>
+    <text class="state-sub">{{loadError}}</text>
+    <button class="btn-primary" bind:tap="onGoBack">← Go Back</button>
+  </view>
+
+  <block wx:if="{{storyData && !loadError}}">
+
+    <!-- Story header -->
+    <view class="story-header card">
+      <text class="story-title">✨ {{storyData.title}}</text>
+      <text class="story-hint">
+        Tap the <text class="story-word">golden words</text> to learn their meaning!
+      </text>
+    </view>
+
+    <!-- Story body -->
+    <view class="story-body card">
+      <view class="collect-bar">
+        <text class="collect-count">📚 {{collectedWords.length}}/{{storyData.words.length}} collected</text>
+      </view>
+      <view class="story-text">
+        <block wx:for="{{segments}}" wx:key="index">
+          <text wx:if="{{item.type === 'text'}}">{{item.text}}</text>
+          <text wx:elif="{{item.type === 'newline'}}">\n\n</text>
+          <text
+            wx:elif="{{item.type === 'word'}}"
+            class="story-word {{collectedWords.indexOf(item.word) !== -1 ? 'story-word--collected' : ''}}"
+            bind:tap="onTapWord"
+            data-word="{{item.word}}"
+          >{{item.text}}</text>
+        </block>
+      </view>
+    </view>
+
+    <!-- Vocabulary Treasure Chest -->
+    <view class="card vocab-chest">
+      <text class="card-title">🏆 Vocabulary Treasure Chest</text>
+      <text class="card-hint">Tap the golden words in the story to collect them!</text>
+
+      <view
+        wx:for="{{storyData.words}}" wx:key="*this"
+        class="vocab-item {{collectedWords.indexOf(item) !== -1 ? 'vocab-item--collected' : 'vocab-item--locked'}}"
+      >
+        <view class="vocab-item-header">
+          <text class="vocab-lock">{{collectedWords.indexOf(item) !== -1 ? '⭐' : '🔒'}}</text>
+          <view class="vocab-word-block">
+            <text class="vocab-word">{{item}}</text>
+            <text
+              wx:if="{{collectedWords.indexOf(item) !== -1 && storyData.vocabulary[item] && storyData.vocabulary[item].stems}}"
+              class="vocab-stems"
+            >{{storyData.vocabulary[item].stems}}</text>
+          </view>
+        </view>
+
+        <view wx:if="{{collectedWords.indexOf(item) !== -1 && storyData.vocabulary[item]}}" class="vocab-detail">
+          <text
+            wx:if="{{storyData.vocabulary[item].construction}}"
+            class="vocab-construction"
+          >{{storyData.vocabulary[item].construction}}</text>
+          <text class="vocab-definition">
+            <text class="vocab-label">Definition: </text>{{storyData.vocabulary[item].definition}}
+          </text>
+          <text class="vocab-example">
+            <text class="vocab-label">Example: </text>"{{storyData.vocabulary[item].example}}"
+          </text>
+        </view>
+
+        <text wx:else class="vocab-hint">Tap this word in the story to unlock! ✨</text>
+      </view>
+    </view>
+
+    <!-- Completion banner -->
+    <view
+      wx:if="{{storyData.words.length > 0 && collectedWords.length === storyData.words.length}}"
+      class="completion-banner card"
+    >
+      <text class="completion-emoji">🎉</text>
+      <text class="completion-title">Amazing! You collected all the words!</text>
+      <text class="completion-sub">You're a true Word Guru! ✨</text>
+      <button class="btn-primary completion-btn" bind:tap="onCreateAnother">Create Another Story →</button>
+    </view>
+
+    <!-- Back button -->
+    <button class="btn-back" bind:tap="onGoBack">
+      ← {{fromHistory ? 'Back to History' : 'Create a New Story'}}
+    </button>
+
+  </block>
+
+  <!-- Backdrop -->
+  <view wx:if="{{showSheet}}" class="sheet-backdrop" catch:tap="onBackdropTap" />
+
+  <!-- Vocabulary bottom sheet -->
+  <view wx:if="{{showSheet && selectedInfo}}" class="bottom-sheet">
+    <view class="sheet-handle" />
+    <view class="sheet-header">
+      <view class="sheet-word-block">
+        <text class="sheet-word">{{selectedWord}}</text>
+        <text wx:if="{{selectedInfo.stems}}" class="sheet-stems">{{selectedInfo.stems}}</text>
+      </view>
+      <text class="sheet-close" bind:tap="onCloseSheet">✕</text>
+    </view>
+    <text wx:if="{{selectedInfo.construction}}" class="sheet-construction">
+      {{selectedInfo.construction}}
+    </text>
+    <view class="sheet-row">
+      <text class="sheet-label">Definition</text>
+      <text class="sheet-value">{{selectedInfo.definition}}</text>
+    </view>
+    <view class="sheet-row">
+      <text class="sheet-label">Example</text>
+      <text class="sheet-value">"{{selectedInfo.example}}"</text>
+    </view>
+  </view>
+
+</view>
