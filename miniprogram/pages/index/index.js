@@ -1,6 +1,7 @@
-const { API } = require('../../config')
+const { API, USE_DIRECT_LLM } = require('../../config')
 const storage = require('../../utils/storage')
 const request = require('../../utils/request')
+const llm     = require('../../utils/llm')
 
 const THEMES = [
   { id: 'enchanted_forest',  label: 'Enchanted Forest',   emoji: '🌲' },
@@ -147,13 +148,19 @@ Page({
 
     const heroName = (this.data.heroName || 'Alex').slice(0, 20).replace(/[^a-zA-Z0-9 ]/g, '')
 
-    request.post(API.GENERATE_STORY, {
-      words: this.data.words,
-      theme: this.data.selectedTheme,
+    const storyParams = {
+      words:      this.data.words,
+      theme:      this.data.selectedTheme,
       difficulty: this.data.difficulty,
-      grade: this.data.grade,
+      grade:      this.data.grade,
       heroName,
-    }).then(data => {
+    }
+
+    const storyPromise = USE_DIRECT_LLM
+      ? llm.generateStory(storyParams)
+      : request.post(API.GENERATE_STORY, storyParams)
+
+    storyPromise.then(data => {
       const entry = storage.addStory(data)
       wx.navigateTo({ url: `/pages/story/story?id=${entry.id}` })
     }).catch(err => {
