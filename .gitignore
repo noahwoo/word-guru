@@ -36,6 +36,11 @@ yarn-error.log*
 # local config with secrets
 config.yaml
 
+# WeChat DevTools generated files
+project.config.json
+project.private.config.json
+miniprogram/project.private.config.json
+
 # runtime story history data
 /data
 
